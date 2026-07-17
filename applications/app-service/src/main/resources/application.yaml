@@ -25,3 +25,9 @@ cors:
 aws:
   dynamodb:
     endpoint: "http://localhost:8000"
+adapter:
+  aws:
+    s3:
+      bucketName: "test"
+      region: "us-east-1"
+      endpoint: "https://s3.localhost.localstack.cloud:4566"
