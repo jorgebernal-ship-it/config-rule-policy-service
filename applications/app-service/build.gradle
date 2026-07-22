@@ -3,7 +3,6 @@ apply plugin: 'org.springframework.boot'
 dependencies {
 	implementation 'software.amazon.awssdk:sts'
 	implementation project(':s3-repository')
-	implementation project(':github-repository')
 	implementation 'org.reactivecommons.utils:object-mapper:0.1.0'
 	implementation project(':dynamo-db')
 	implementation project(':metrics')
