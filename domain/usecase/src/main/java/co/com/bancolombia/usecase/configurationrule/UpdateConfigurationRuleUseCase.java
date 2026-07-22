@@ -17,8 +17,6 @@ public class UpdateConfigurationRuleUseCase {
         return repository.findById(id)
                 .switchIfEmpty(Mono.error(new ConfigurationRuleNotFoundException(id)))
                 .flatMap(existingRule -> {
-                    SpecValidator.validateSpec(updatedRule.getType(), updatedRule.getSpec());
-
                     ConfigurationRule ruleToUpdate = ConfigurationRule.builder()
                             .id(existingRule.getId())
                             .type(updatedRule.getType())

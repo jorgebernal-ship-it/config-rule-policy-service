@@ -17,8 +17,6 @@ public class CreateConfigurationRuleUseCase {
     public Mono<ConfigurationRule> execute(ConfigurationRule rule) {
         String id = rule.getId() != null ? rule.getId() : UUID.randomUUID().toString();
 
-        SpecValidator.validateSpec(rule.getType(), rule.getSpec());
-
         Instant now = Instant.now();
         ConfigurationRule ruleToCreate = ConfigurationRule.builder()
                 .id(id)
