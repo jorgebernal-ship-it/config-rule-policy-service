@@ -1,14 +1,16 @@
 apply plugin: 'org.springframework.boot'
 
 dependencies {
+	implementation 'software.amazon.awssdk:sts'
+	implementation project(':s3-repository')
+	implementation project(':github-repository')
+	implementation 'org.reactivecommons.utils:object-mapper:0.1.0'
 	implementation project(':dynamo-db')
 	implementation project(':metrics')
 	implementation project(':reactive-web')
     implementation project(':model')
     implementation project(':usecase')
     implementation 'org.springframework.boot:spring-boot-starter'
-    // Springdoc temporalmente deshabilitado por incompatibilidad con Spring Boot 4.1.0
-    // implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.7.0'
     runtimeOnly('org.springframework.boot:spring-boot-devtools')
     testImplementation 'com.tngtech.archunit:archunit:1.4.2'
     testImplementation 'tools.jackson.core:jackson-databind'
