@@ -25,7 +25,7 @@ cors:
 aws:
   region: "us-east-1"
   dynamodb:
-    endpoint: "http://localhost:4566"
+    endpoint: "http://localhost:8010"
 adapters:
   aws:
     s3:
