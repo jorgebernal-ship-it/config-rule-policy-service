@@ -24,4 +24,10 @@ cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
 aws:
   dynamodb:
-    endpoint: "http://localhost:8000"
+    endpoint: "http://localhost:4566"
+adapters:
+  aws:
+    s3:
+      bucketName: "policies-bucket"
+      region: "us-east-1"
+      endpoint: "https://s3.localhost.localstack.cloud:4566"
