@@ -1,5 +1,6 @@
 package co.com.bancolombia.dynamodb.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,7 +8,6 @@ import org.springframework.context.annotation.Profile;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.WebIdentityTokenFileCredentialsProvider;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient;
-import software.amazon.awssdk.metrics.MetricPublisher;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 
@@ -19,23 +19,20 @@ public class DynamoDBConfig {
     @Bean
     @Profile({"local"})
     public DynamoDbAsyncClient amazonDynamoDB(@Value("${aws.dynamodb.endpoint}") String endpoint,
-                                              @Value("${adapters.aws.s3.region}") String region,
-                                              MetricPublisher publisher) {
+                                              @Value("${aws.region:us-east-1}") String region) {
         return DynamoDbAsyncClient.builder()
                 .credentialsProvider(ProfileCredentialsProvider.create("default"))
                 .region(Region.of(region))
                 .endpointOverride(URI.create(endpoint))
-                .overrideConfiguration(o -> o.addMetricPublisher(publisher))
                 .build();
     }
 
     @Bean
     @Profile({"dev", "cer", "pdn"})
-    public DynamoDbAsyncClient amazonDynamoDBAsync(MetricPublisher publisher, @Value("${aws.region}") String region) {
+    public DynamoDbAsyncClient amazonDynamoDBAsync(@Value("${aws.region}") String region) {
         return DynamoDbAsyncClient.builder()
                 .credentialsProvider(WebIdentityTokenFileCredentialsProvider.create())
                 .region(Region.of(region))
-                .overrideConfiguration(o -> o.addMetricPublisher(publisher))
                 .build();
     }
 
@@ -46,4 +43,8 @@ public class DynamoDBConfig {
                 .build();
     }
 
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
 }

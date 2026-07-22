@@ -17,7 +17,7 @@ subprojects {
 
     java {
         toolchain {
-            languageVersion = JavaLanguageVersion.of(25)
+            languageVersion = JavaLanguageVersion.of(21)
         }
     }
 
@@ -106,7 +106,8 @@ tasks.register('jacocoMergedReport', JacocoReport) {
 
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs = [
-            '-Amapstruct.suppressGeneratorTimestamp=true'
+            '-Amapstruct.suppressGeneratorTimestamp=true',
+            '-parameters'
     ]
 }
 
