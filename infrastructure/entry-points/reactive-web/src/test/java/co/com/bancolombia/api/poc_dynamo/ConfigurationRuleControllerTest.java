@@ -8,11 +8,7 @@ import co.com.bancolombia.model.policymodel.configurationrule.Status;
 import co.com.bancolombia.model.policymodel.exceptions.ConfigurationRuleNotFoundException;
 import co.com.bancolombia.model.policymodel.exceptions.InvalidSpecException;
 import co.com.bancolombia.model.policymodel.exceptions.RawContentNotAvailableException;
-import co.com.bancolombia.usecase.configurationrule.CreateConfigurationRuleUseCase;
-import co.com.bancolombia.usecase.configurationrule.DeleteConfigurationRuleUseCase;
-import co.com.bancolombia.usecase.configurationrule.GetConfigurationRuleRawUseCase;
-import co.com.bancolombia.usecase.configurationrule.GetConfigurationRuleUseCase;
-import co.com.bancolombia.usecase.configurationrule.UpdateConfigurationRuleUseCase;
+import co.com.bancolombia.usecase.configurationrule.ConfigurationRuleUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,19 +35,7 @@ class ConfigurationRuleControllerTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    private CreateConfigurationRuleUseCase createUseCase;
-
-    @MockitoBean
-    private GetConfigurationRuleUseCase getUseCase;
-
-    @MockitoBean
-    private GetConfigurationRuleRawUseCase getRawUseCase;
-
-    @MockitoBean
-    private UpdateConfigurationRuleUseCase updateUseCase;
-
-    @MockitoBean
-    private DeleteConfigurationRuleUseCase deleteUseCase;
+    private ConfigurationRuleUseCase useCase;
 
     private ConfigurationRule sampleRoutingRule;
     private ConfigurationRule samplePolicyRule;
@@ -89,7 +73,7 @@ class ConfigurationRuleControllerTest {
 
     @Test
     void createRule_shouldReturn201WithBody() {
-        when(createUseCase.execute(any())).thenReturn(Mono.just(sampleRoutingRule));
+        when(useCase.create(any())).thenReturn(Mono.just(sampleRoutingRule));
 
         ConfigurationRuleRequest request = new ConfigurationRuleRequest(
                 "routing", "Payment Routing", "payment-domain", "active",
@@ -111,7 +95,7 @@ class ConfigurationRuleControllerTest {
 
     @Test
     void createRule_whenInvalidSpec_shouldReturn400() {
-        when(createUseCase.execute(any()))
+        when(useCase.create(any()))
                 .thenReturn(Mono.error(new InvalidSpecException(
                         "For type 'policy-rego', spec.content must exist and cannot be blank")));
 
@@ -131,7 +115,7 @@ class ConfigurationRuleControllerTest {
 
     @Test
     void getRule_shouldReturn200WithBody() {
-        when(getUseCase.execute(RULE_ID)).thenReturn(Mono.just(sampleRoutingRule));
+        when(useCase.getById(RULE_ID)).thenReturn(Mono.just(sampleRoutingRule));
 
         webTestClient.get()
                 .uri("/configuration-rules/{id}", RULE_ID)
@@ -147,7 +131,7 @@ class ConfigurationRuleControllerTest {
 
     @Test
     void getRule_whenNotFound_shouldReturn404() {
-        when(getUseCase.execute(anyString()))
+        when(useCase.getById(anyString()))
                 .thenReturn(Mono.error(new ConfigurationRuleNotFoundException("unknown-id")));
 
         webTestClient.get()
@@ -162,7 +146,7 @@ class ConfigurationRuleControllerTest {
     @Test
     void getRaw_shouldReturnPlainText() {
         String regoContent = "package authz\n\ndefault allow := false";
-        when(getRawUseCase.execute(RULE_ID)).thenReturn(Mono.just(regoContent));
+        when(useCase.getRawContent(RULE_ID)).thenReturn(Mono.just(regoContent));
 
         webTestClient.get()
                 .uri("/configuration-rules/{id}/raw", RULE_ID)
@@ -176,7 +160,7 @@ class ConfigurationRuleControllerTest {
 
     @Test
     void getRaw_whenNotPolicyRego_shouldReturn404() {
-        when(getRawUseCase.execute(anyString()))
+        when(useCase.getRawContent(anyString()))
                 .thenReturn(Mono.error(new RawContentNotAvailableException(
                         "Raw content is only available for type 'policy-rego'")));
 
@@ -197,7 +181,7 @@ class ConfigurationRuleControllerTest {
                 .version(2)
                 .build();
 
-        when(updateUseCase.execute(eq(RULE_ID), any())).thenReturn(Mono.just(updatedRule));
+        when(useCase.update(eq(RULE_ID), any())).thenReturn(Mono.just(updatedRule));
 
         ConfigurationRuleRequest request = new ConfigurationRuleRequest(
                 "routing", "Payment Routing V2", "payment-domain", "active",
@@ -219,7 +203,7 @@ class ConfigurationRuleControllerTest {
 
     @Test
     void updateRule_whenNotFound_shouldReturn404() {
-        when(updateUseCase.execute(anyString(), any()))
+        when(useCase.update(anyString(), any()))
                 .thenReturn(Mono.error(new ConfigurationRuleNotFoundException("unknown-id")));
 
         ConfigurationRuleRequest request = new ConfigurationRuleRequest(
@@ -236,7 +220,7 @@ class ConfigurationRuleControllerTest {
 
     @Test
     void updateRule_whenInvalidSpec_shouldReturn400() {
-        when(updateUseCase.execute(anyString(), any()))
+        when(useCase.update(anyString(), any()))
                 .thenReturn(Mono.error(new InvalidSpecException(
                         "For type 'policy-rego', spec.content must exist and cannot be blank")));
 
@@ -256,7 +240,7 @@ class ConfigurationRuleControllerTest {
 
     @Test
     void deleteRule_shouldReturn204NoContent() {
-        when(deleteUseCase.execute(RULE_ID)).thenReturn(Mono.empty());
+        when(useCase.delete(RULE_ID)).thenReturn(Mono.empty());
 
         webTestClient.delete()
                 .uri("/configuration-rules/{id}", RULE_ID)
@@ -267,7 +251,7 @@ class ConfigurationRuleControllerTest {
 
     @Test
     void deleteRule_whenNotFound_shouldReturn404() {
-        when(deleteUseCase.execute(anyString()))
+        when(useCase.delete(anyString()))
                 .thenReturn(Mono.error(new ConfigurationRuleNotFoundException("unknown-id")));
 
         webTestClient.delete()
