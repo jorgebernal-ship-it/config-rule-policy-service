@@ -43,13 +43,13 @@ public class S3Adapter implements PolicyStorageSThreeModelRepository {
                     return s3Operations.uploadObject(bucketName, objectKey, fileBytes)
                             .flatMap(saved -> saved
                                     ? Mono.just(model.toBuilder()
-                                    .bucketName(bucketName)
-                                    .objectKey(objectKey)
-                                    .fileName(extractFileName(objectKey))
-                                    .contentType(hasText(model.getContentType()) ? model.getContentType() : DEFAULT_CONTENT_TYPE)
-                                    .sizeInBytes(sizeInBytes)
-                                    .fileBytes(null)   // no devolver los bytes en la respuesta
-                                    .build())
+                                        .bucketName(bucketName)
+                                        .objectKey(objectKey)
+                                        .fileName(extractFileName(objectKey))
+                                        .contentType(hasText(model.getContentType()) ? model.getContentType() : DEFAULT_CONTENT_TYPE)
+                                        .sizeInBytes(sizeInBytes)
+                                        .fileBytes(null)
+                                        .build())
                                     : Mono.error(new IllegalStateException("No fue posible almacenar el archivo en S3")));
                 });
     }
@@ -166,24 +166,11 @@ public class S3Adapter implements PolicyStorageSThreeModelRepository {
             return Mono.error(new IllegalArgumentException("Debe enviar objectKey o fileName"));
         }
 
-        String normalizedName = extractFileName(fileName.replace('\\', '/')).trim();
-        return s3Operations.listBucketObjects(bucketName)
-                .flatMap(objects -> resolveByName(objects, normalizedName));
-    }
-
-    private Mono<String> resolveByName(List<software.amazon.awssdk.services.s3.model.S3Object> objects, String fileName) {
-        List<String> matches = objects.stream()
-                .map(s3Object -> s3Object.key().replace('\\', '/'))
-                .filter(key -> extractFileName(key).equals(fileName))
-                .toList();
-
-        if (matches.isEmpty()) {
-            return Mono.error(new S3ObjectNotFoundException("fileName=" + fileName));
-        }
-        if (matches.size() > 1) {
-            return Mono.error(new S3ObjectAmbiguousException(fileName));
-        }
-        return Mono.just(matches.get(0));
+        String normalizedKey = normalizeAbsoluteObjectKey(fileName);
+        return s3Operations.objectExists(bucketName, normalizedKey)
+                .flatMap(exists -> exists
+                        ? Mono.just(normalizedKey)
+                        : Mono.error(new S3ObjectNotFoundException("fileName=" + normalizedKey)));
     }
 
     private boolean isInRequestedLevel(String fullKey, String folder) {
