@@ -35,7 +35,8 @@ public class S3Operations {
         return Mono.fromFuture(
                 s3AsyncClient.putObject(configurePutObject(bucketName,objectKey),
                         AsyncRequestBody.fromBytes(fileContent)))
-                .map(response -> response.sdkHttpResponse().isSuccessful());
+                .map(response -> response.sdkHttpResponse().isSuccessful())
+                .onErrorMap(S3Exception.class, e -> new RuntimeException("Error uploading object to S3: " + e.getMessage(), e));
     }
 
     public Mono<Boolean> uploadObject(String bucketName,String objectKey, String fileContent) {
