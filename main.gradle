@@ -17,7 +17,7 @@ subprojects {
 
     java {
         toolchain {
-            languageVersion = JavaLanguageVersion.of(21)
+            languageVersion = JavaLanguageVersion.of(25)
         }
     }
 
@@ -43,6 +43,7 @@ subprojects {
         testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
         implementation platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
         pitest "org.pitest:pitest-history-plugin:${pitestHistoryVersion}"
+        implementation 'org.springframework.boot:spring-boot-starter-webflux'
     }
 
     tasks.withType(Test).configureEach {

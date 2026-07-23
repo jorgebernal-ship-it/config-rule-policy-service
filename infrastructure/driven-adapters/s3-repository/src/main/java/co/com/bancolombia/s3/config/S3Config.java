@@ -9,6 +9,7 @@ import software.amazon.awssdk.auth.credentials.WebIdentityTokenFileCredentialsPr
 import software.amazon.awssdk.metrics.MetricPublisher;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
+import software.amazon.awssdk.services.s3.S3Configuration;
 
 
 import java.net.URI;
@@ -36,6 +37,9 @@ public class S3Config {
                 .credentialsProvider(ProfileCredentialsProvider.create("default"))
                 .overrideConfiguration(o -> o.addMetricPublisher(publisher))
                 .endpointOverride(URI.create(s3Properties.endpoint()))
+                .serviceConfiguration(S3Configuration.builder()
+                        .pathStyleAccessEnabled(true)
+                        .build())
                 .build();
     }
 

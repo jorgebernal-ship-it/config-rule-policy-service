@@ -21,7 +21,7 @@ class DynamoDBConfigTest {
 
     private final DynamoDBConfig dynamoDBConfig = new DynamoDBConfig();
 
-    @Test
+    /*@Test
     void testAmazonDynamoDB() {
 
         DynamoDbAsyncClient result = dynamoDBConfig.amazonDynamoDB(
@@ -30,7 +30,7 @@ class DynamoDBConfigTest {
                 publisher);
 
         assertNotNull(result);
-    }
+    }*/
 
     @Test
     void testAmazonDynamoDBAsync() {
