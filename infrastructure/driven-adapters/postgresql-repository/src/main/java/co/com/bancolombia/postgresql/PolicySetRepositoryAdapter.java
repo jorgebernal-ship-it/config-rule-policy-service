@@ -46,9 +46,8 @@ public class PolicySetRepositoryAdapter implements PolicySetRepository {
     private Mono<PolicySet> savePolicySetWithHierarchy(PolicySet policySet) {
         PolicySetEntity policySetEntity = mapper.toPolicySetEntity(policySet);
         
-        if (policySetEntity.getId() == null || policySetEntity.getId().isEmpty()) {
-            policySetEntity.setId(UUID.randomUUID().toString());
-        }
+        // No establecer ID si es null, dejar que PostgreSQL lo genere con gen_random_uuid()
+        // Solo establecer si ya existe (para updates)
         
         Instant now = Instant.now();
         if (policySetEntity.getCreatedAt() == null) {
@@ -78,13 +77,10 @@ public class PolicySetRepositoryAdapter implements PolicySetRepository {
                 });
     }
 
-    private Mono<Policy> savePolicyWithRules(Policy policy, String policySetId) {
+    private Mono<Policy> savePolicyWithRules(Policy policy, UUID policySetId) {
         PolicyEntity policyEntity = mapper.toPolicyEntity(policy);
         
-        if (policyEntity.getId() == null || policyEntity.getId().isEmpty()) {
-            policyEntity.setId(UUID.randomUUID().toString());
-        }
-        
+        // No establecer ID si es null, dejar que PostgreSQL lo genere
         policyEntity.setPolicySetId(policySetId);
 
         return policyRepository.save(policyEntity)
@@ -103,13 +99,10 @@ public class PolicySetRepositoryAdapter implements PolicySetRepository {
                 });
     }
 
-    private Mono<Rule> saveRule(Rule rule, String policyId) {
+    private Mono<Rule> saveRule(Rule rule, UUID policyId) {
         RuleEntity ruleEntity = mapper.toRuleEntity(rule, objectMapper);
         
-        if (ruleEntity.getId() == null || ruleEntity.getId().isEmpty()) {
-            ruleEntity.setId(UUID.randomUUID().toString());
-        }
-        
+        // No establecer ID si es null, dejar que PostgreSQL lo genere
         ruleEntity.setPolicyId(policyId);
 
         return ruleRepository.save(ruleEntity)
@@ -120,7 +113,7 @@ public class PolicySetRepositoryAdapter implements PolicySetRepository {
     public Mono<PolicySet> findById(String id) {
         log.info("Finding PolicySet by id: {}", id);
 
-        return policySetRepository.findById(id)
+        return policySetRepository.findById(UUID.fromString(id))
                 .flatMap(this::loadFullHierarchy)
                 .doOnSuccess(found -> {
                     if (found != null) {
@@ -169,7 +162,7 @@ public class PolicySetRepositoryAdapter implements PolicySetRepository {
     public Mono<Void> deleteById(String id) {
         log.info("Deleting PolicySet with id: {}", id);
 
-        return policySetRepository.findById(id)
+        return policySetRepository.findById(UUID.fromString(id))
                 .flatMap(policySet -> 
                     policyRepository.findByPolicySetIdOrderBySequenceAsc(policySet.getId())
                             .flatMap(policy -> 

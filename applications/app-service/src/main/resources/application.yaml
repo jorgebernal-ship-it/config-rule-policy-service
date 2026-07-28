@@ -11,9 +11,13 @@ spring:
   profiles:
     active: local
   r2dbc:
-    url: "r2dbc:postgresql://localhost:5432/policy_db"
+    url: "r2dbc:postgresql://localhost:5432/config_server_poc"
     username: "postgres"
-    password: "postgres"
+    password: "tu_password"
+  data:
+    r2dbc:
+      repositories:
+        enabled: true
 
 # === CONFIGURACIONES DE LA POC (GITHUB Y CONFIG SERVER) ===
 config:

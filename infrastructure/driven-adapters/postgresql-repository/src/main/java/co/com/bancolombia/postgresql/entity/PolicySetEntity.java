@@ -9,15 +9,16 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table("policy_set")
+@Table(name = "policy_set")
 public class PolicySetEntity {
     @Id
-    private String id;
+    private UUID id;
     
     @Column("name")
     private String name;

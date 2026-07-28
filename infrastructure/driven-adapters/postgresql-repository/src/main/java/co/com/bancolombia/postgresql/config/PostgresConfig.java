@@ -8,6 +8,9 @@ import org.springframework.r2dbc.connection.R2dbcTransactionManager;
 import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+/**
+ * Configuración de PostgreSQL con R2DBC.
+ */
 @Configuration
 @EnableR2dbcRepositories(basePackages = "co.com.bancolombia.postgresql.repository")
 @EnableTransactionManagement

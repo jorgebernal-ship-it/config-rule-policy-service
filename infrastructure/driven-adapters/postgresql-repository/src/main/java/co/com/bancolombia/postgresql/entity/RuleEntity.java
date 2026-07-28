@@ -9,17 +9,19 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 import io.r2dbc.postgresql.codec.Json;
 
+import java.util.UUID;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table("rule")
+@Table(name = "rule")
 public class RuleEntity {
     @Id
-    private String id;
+    private UUID id;
     
     @Column("policy_id")
-    private String policyId;
+    private UUID policyId;
     
     @Column("name")
     private String name;

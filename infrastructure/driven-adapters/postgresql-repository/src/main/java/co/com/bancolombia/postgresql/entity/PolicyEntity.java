@@ -8,17 +8,19 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.util.UUID;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table("policy")
+@Table(name = "policy")
 public class PolicyEntity {
     @Id
-    private String id;
+    private UUID id;
     
     @Column("policy_set_id")
-    private String policySetId;
+    private UUID policySetId;
     
     @Column("name")
     private String name;

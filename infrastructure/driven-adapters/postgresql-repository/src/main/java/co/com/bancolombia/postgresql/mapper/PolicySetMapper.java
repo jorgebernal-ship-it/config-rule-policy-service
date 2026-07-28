@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -28,7 +29,7 @@ public class PolicySetMapper {
         }
 
         return PolicySetEntity.builder()
-                .id(policySet.getId())
+                .id(policySet.getId() != null ? UUID.fromString(policySet.getId()) : null)
                 .name(policySet.getName())
                 .channel(policySet.getChannel())
                 .transactionCode(policySet.getTransactionCode())
@@ -47,7 +48,7 @@ public class PolicySetMapper {
         }
 
         return PolicySet.builder()
-                .id(entity.getId())
+                .id(entity.getId() != null ? entity.getId().toString() : null)
                 .name(entity.getName())
                 .channel(entity.getChannel())
                 .transactionCode(entity.getTransactionCode())
@@ -67,8 +68,8 @@ public class PolicySetMapper {
         }
 
         return PolicyEntity.builder()
-                .id(policy.getId())
-                .policySetId(policy.getPolicySetId())
+                .id(policy.getId() != null ? UUID.fromString(policy.getId()) : null)
+                .policySetId(policy.getPolicySetId() != null ? UUID.fromString(policy.getPolicySetId()) : null)
                 .name(policy.getName())
                 .algorithmCombinationRules(policy.getAlgorithmCombinationRules())
                 .sequence(policy.getSequence())
@@ -81,8 +82,8 @@ public class PolicySetMapper {
         }
 
         return Policy.builder()
-                .id(entity.getId())
-                .policySetId(entity.getPolicySetId())
+                .id(entity.getId() != null ? entity.getId().toString() : null)
+                .policySetId(entity.getPolicySetId() != null ? entity.getPolicySetId().toString() : null)
                 .name(entity.getName())
                 .algorithmCombinationRules(entity.getAlgorithmCombinationRules())
                 .sequence(entity.getSequence())
@@ -107,8 +108,8 @@ public class PolicySetMapper {
         }
 
         return RuleEntity.builder()
-                .id(rule.getId())
-                .policyId(rule.getPolicyId())
+                .id(rule.getId() != null ? UUID.fromString(rule.getId()) : null)
+                .policyId(rule.getPolicyId() != null ? UUID.fromString(rule.getPolicyId()) : null)
                 .name(rule.getName())
                 .effect(rule.getEffect())
                 .decisionCode(rule.getDecisionCode())
@@ -135,8 +136,8 @@ public class PolicySetMapper {
         }
 
         return Rule.builder()
-                .id(entity.getId())
-                .policyId(entity.getPolicyId())
+                .id(entity.getId() != null ? entity.getId().toString() : null)
+                .policyId(entity.getPolicyId() != null ? entity.getPolicyId().toString() : null)
                 .name(entity.getName())
                 .effect(entity.getEffect())
                 .decisionCode(entity.getDecisionCode())

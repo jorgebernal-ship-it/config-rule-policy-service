@@ -27,7 +27,7 @@ CREATE TABLE rule (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   policy_id UUID NOT NULL REFERENCES policy(id) ON DELETE CASCADE,
   name VARCHAR NOT NULL,
-  effect VARCHAR NOT NULL CHECK (effect IN ('allow','deny')),
+  effect VARCHAR NOT NULL CHECK (effect IN ('ALLOW','DENY','PERMIT')),
   decision_code VARCHAR,
   target JSONB NOT NULL,
   when_attribute VARCHAR NOT NULL,

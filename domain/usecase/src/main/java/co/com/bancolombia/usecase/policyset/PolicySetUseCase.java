@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 public class PolicySetUseCase {
@@ -14,11 +13,11 @@ public class PolicySetUseCase {
     private final PolicySetRepository repository;
 
     public Mono<PolicySet> create(PolicySet policySet) {
-        String id = policySet.getId() != null ? policySet.getId() : UUID.randomUUID().toString();
+        // No generar ID aquí, dejar que PostgreSQL lo genere con gen_random_uuid()
 
         Instant now = Instant.now();
         PolicySet policySetToCreate = policySet.toBuilder()
-                .id(id)
+                .id(null)  // Asegurar que el ID sea null para que PostgreSQL lo genere
                 .status(policySet.getStatus() != null ? policySet.getStatus() : "ACTIVE")
                 .createdAt(now)
                 .updatedAt(now)
