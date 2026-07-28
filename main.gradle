@@ -30,7 +30,11 @@ subprojects {
     dependencies {
 		implementation platform('software.amazon.awssdk:bom:2.46.8')
         implementation 'io.projectreactor:reactor-core'
-        implementation 'io.projectreactor.addons:reactor-extra'
+        
+        // reactor-extra solo para módulos que no sean de dominio
+        if (!project.name.equals('model') && !project.name.equals('usecase')) {
+            implementation 'io.projectreactor.addons:reactor-extra'
+        }
 
         testImplementation "io.projectreactor.tools:blockhound-junit-platform:${blockHoundVersion}"
 
@@ -43,7 +47,11 @@ subprojects {
         testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
         implementation platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
         pitest "org.pitest:pitest-history-plugin:${pitestHistoryVersion}"
-        implementation 'org.springframework.boot:spring-boot-starter-webflux'
+        
+        // Excluir spring-boot-starter-webflux para módulos de dominio
+        if (!project.name.equals('model') && !project.name.equals('usecase')) {
+            implementation 'org.springframework.boot:spring-boot-starter-webflux'
+        }
     }
 
     tasks.withType(Test).configureEach {
