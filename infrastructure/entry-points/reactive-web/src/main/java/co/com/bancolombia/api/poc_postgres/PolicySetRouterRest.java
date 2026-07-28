@@ -135,9 +135,9 @@ public class PolicySetRouterRest {
     })
     public RouterFunction<ServerResponse> policySetRoutes(PolicySetHandler handler) {
         return route(POST(BASE_PATH).and(accept(MediaType.APPLICATION_JSON)), handler::createPolicySet)
-                .andRoute(GET(BASE_PATH + "/{id}").and(accept(MediaType.APPLICATION_JSON)), handler::getPolicySetById)
                 .andRoute(GET(BASE_PATH + "/search").and(accept(MediaType.APPLICATION_JSON)),
                         handler::getPolicySetByChannelAndTxCode)
+                .andRoute(GET(BASE_PATH + "/{id}").and(accept(MediaType.APPLICATION_JSON)), handler::getPolicySetById)
                 .andRoute(PUT(BASE_PATH + "/{id}").and(accept(MediaType.APPLICATION_JSON)), handler::updatePolicySet)
                 .andRoute(DELETE(BASE_PATH + "/{id}"), handler::deletePolicySet);
     }
