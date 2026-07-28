@@ -1,15 +1,19 @@
 server:
   port: 8080
+
 spring:
   application:
     name: "poc_opa_config"
-
   h2:
     console:
       enabled: true
       path: "/h2"
   profiles:
     active: local
+  r2dbc:
+    url: "r2dbc:postgresql://localhost:5432/policy_db"
+    username: "postgres"
+    password: "postgres"
 
 # === CONFIGURACIONES DE LA POC (GITHUB Y CONFIG SERVER) ===
 config:
@@ -19,8 +23,8 @@ config:
 github:
   owner: "jorgebd09"
   repo: "pruebaTUL"
+  token: ""  # Dejar vacío o agregar token personal de GitHub si se requiere
 
-# ==========================================================
 management:
   endpoints:
     web:
@@ -30,12 +34,15 @@ management:
     health:
       probes:
         enabled: true
+
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
+
 aws:
   region: "us-east-1"
   dynamodb:
     endpoint: "http://localhost:8010"
+
 adapters:
   aws:
     s3:

@@ -29,3 +29,5 @@ include ':github-repository'
 project(':github-repository').projectDir = file('./infrastructure/driven-adapters/github-repository')
 include ':s3-repository'
 project(':s3-repository').projectDir = file('./infrastructure/driven-adapters/s3-repository')
+include ':postgresql-repository'
+project(':postgresql-repository').projectDir = file('./infrastructure/driven-adapters/postgresql-repository')

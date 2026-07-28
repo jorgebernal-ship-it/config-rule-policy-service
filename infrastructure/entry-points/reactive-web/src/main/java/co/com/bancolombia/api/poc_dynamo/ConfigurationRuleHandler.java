@@ -3,11 +3,7 @@ package co.com.bancolombia.api;
 import co.com.bancolombia.api.dto.ConfigurationRuleRequest;
 import co.com.bancolombia.api.dto.ConfigurationRuleResponse;
 import co.com.bancolombia.api.mapper.ConfigurationRuleMapper;
-import co.com.bancolombia.usecase.configurationrule.CreateConfigurationRuleUseCase;
-import co.com.bancolombia.usecase.configurationrule.DeleteConfigurationRuleUseCase;
-import co.com.bancolombia.usecase.configurationrule.GetConfigurationRuleRawUseCase;
-import co.com.bancolombia.usecase.configurationrule.GetConfigurationRuleUseCase;
-import co.com.bancolombia.usecase.configurationrule.UpdateConfigurationRuleUseCase;
+import co.com.bancolombia.usecase.configurationrule.ConfigurationRuleUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -21,17 +17,13 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class ConfigurationRuleHandler {
 
-    private final CreateConfigurationRuleUseCase createUseCase;
-    private final GetConfigurationRuleUseCase getUseCase;
-    private final GetConfigurationRuleRawUseCase getRawUseCase;
-    private final UpdateConfigurationRuleUseCase updateUseCase;
-    private final DeleteConfigurationRuleUseCase deleteUseCase;
+    private final ConfigurationRuleUseCase configurationRuleUseCase;
 
     public Mono<ServerResponse> createConfigurationRule(ServerRequest request) {
         return request.bodyToMono(ConfigurationRuleRequest.class)
                 .doOnNext(dto -> log.info("Creating configuration rule with type: {}", dto.type()))
                 .map(ConfigurationRuleMapper::toDomain)
-                .flatMap(createUseCase::execute)
+                .flatMap(configurationRuleUseCase::create)
                 .map(ConfigurationRuleMapper::toResponseDTO)
                 .doOnSuccess(response -> log.info("Configuration rule created with id: {}", response.id()))
                 .flatMap(response -> ServerResponse.status(201)
@@ -44,7 +36,7 @@ public class ConfigurationRuleHandler {
         String id = request.pathVariable("id");
         log.info("Getting configuration rule with id: {}", id);
 
-        return getUseCase.execute(id)
+        return configurationRuleUseCase.findById(id)
                 .map(ConfigurationRuleMapper::toResponseDTO)
                 .doOnSuccess(response -> log.info("Configuration rule retrieved with id: {}", response.id()))
                 .flatMap(response -> ServerResponse.ok()
@@ -58,7 +50,7 @@ public class ConfigurationRuleHandler {
         String id = request.pathVariable("id");
         log.info("Getting raw content for configuration rule with id: {}", id);
 
-        return getRawUseCase.execute(id)
+        return configurationRuleUseCase.getRawContent(id)
                 .doOnSuccess(content -> log.info("Raw content retrieved for rule id: {}, size: {} bytes", id, content.length()))
                 .flatMap(content -> ServerResponse.ok()
                         .contentType(MediaType.TEXT_PLAIN)
@@ -72,7 +64,7 @@ public class ConfigurationRuleHandler {
         return request.bodyToMono(ConfigurationRuleRequest.class)
                 .doOnNext(dto -> log.info("Updating configuration rule with id: {}", id))
                 .map(ConfigurationRuleMapper::toDomain)
-                .flatMap(rule -> updateUseCase.execute(id, rule))
+                .flatMap(rule -> configurationRuleUseCase.update(id, rule))
                 .map(ConfigurationRuleMapper::toResponseDTO)
                 .doOnSuccess(response -> log.info("Configuration rule updated with id: {}, new version: {}",
                         response.id(), response.version()))
@@ -86,7 +78,7 @@ public class ConfigurationRuleHandler {
         String id = request.pathVariable("id");
         log.info("Deleting configuration rule with id: {}", id);
 
-        return deleteUseCase.execute(id)
+        return configurationRuleUseCase.delete(id)
                 .doOnSuccess(v -> log.info("Configuration rule deleted with id: {}", id))
                 .then(ServerResponse.noContent().build())
                 .onErrorResume(this::handleError);

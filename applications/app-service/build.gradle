@@ -6,6 +6,7 @@ dependencies {
     implementation project(':github-repository')
 	implementation 'org.reactivecommons.utils:object-mapper:0.1.0'
 	implementation project(':dynamo-db')
+	implementation project(':postgresql-repository')
 	implementation project(':metrics')
 	implementation project(':reactive-web')
     implementation project(':model')
